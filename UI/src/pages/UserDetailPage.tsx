@@ -42,11 +42,12 @@ const UserDetailPage: React.FC = () => {
     <div className="container">
       <h1>User Details</h1>
       <div className="user-details">
-        <img
+      {user?.avatar &&  <img
           src={user!.avatar}
           alt={`${user!.first_name} ${user!.last_name}`}
           className="user-avatar"
-        />
+        /> }
+       
 
         <ul>
           <li>
