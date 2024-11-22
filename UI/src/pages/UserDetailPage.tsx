@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { fetchUserById } from '../services/api';
 
 interface Company {
@@ -26,20 +26,33 @@ const UserDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUserById(Number(id))
+    setTimeout(()=>{
+      fetchUserById(Number(id))
       .then((data) => {
         if (data) setUser(data);
         else setError('User Not Found');
       })
       .catch(() => setError('Error fetching user'))
       .finally(() => setLoading(false));
+
+    }, 1000)
+   
   }, [id]);
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading)
+    return (
+      <div className="spinner-wrapper">
+        <div className="spinner"></div>
+      </div>
+    );
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="container">
+       <Link to="/">
+       <span className='back-link'>  ← Home</span>
+        
+        </Link>
       <h1>User Details</h1>
       <div className="user-details">
       {user?.avatar &&  <img
