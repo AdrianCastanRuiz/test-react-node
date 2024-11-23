@@ -17,10 +17,7 @@ interface User {
   skills: string[];
 }
 
-interface UserDetailContext {
-  user: User | null;
-  error: string | null;
-}
+
 
 export const userDetailMachine = createMachine({
   id: 'userDetail',

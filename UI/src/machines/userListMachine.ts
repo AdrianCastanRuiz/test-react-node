@@ -1,3 +1,4 @@
+// src/machines/userListMachine.ts
 import { createMachine, assign } from 'xstate';
 
 interface User {
@@ -11,16 +12,12 @@ interface UserListContext {
   error: string | null;
 }
 
-type UserListEvent =
-  | { type: 'done.invoke.fetchUsers'; data: User[] }
-  | { type: 'error.platform.fetchUsers'; data: string };
-
 export const userListMachine = createMachine({
   id: 'userList',
   initial: 'loading',
   context: {
-    users: [] as User[], 
-    error: null as string | null,
+    users: [],
+    error: null,
   },
   states: {
     loading: {
@@ -28,15 +25,11 @@ export const userListMachine = createMachine({
         src: 'fetchUsers',
         onDone: {
           target: 'success',
-          actions: assign({
-            users: (_, event) => (event as unknown as { data: User[] }).data, 
-          }),
+          actions: assign({ users: (_, event) => event.data }),
         },
         onError: {
           target: 'failure',
-          actions: assign({
-            error: (_, event) => (event as unknown as { data: string }).data, 
-          }),
+          actions: assign({ error: (_, event) => event.data }),
         },
       },
     },

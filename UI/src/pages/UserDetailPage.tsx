@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchUserById } from '../services/api';
+import { User } from '../types/User';
 
-interface Company {
-  name: string;
-  department: string;
-}
 
-interface User {
-  id: number;
-  avatar: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  emailVerified: boolean;
-  dob: string;
-  company: Company;
-  skills: string[];
-}
+
+
 
 const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
