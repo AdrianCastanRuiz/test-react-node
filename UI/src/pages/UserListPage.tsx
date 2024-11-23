@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchUsers } from '../services/api';
+import { User } from '../types/User';
 
-interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
+
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
