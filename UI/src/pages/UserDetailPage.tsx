@@ -5,23 +5,24 @@ import { User } from '../types/User';
 
 
 const UserDetailPage: React.FC = () => {
+
   const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       fetchUserById(Number(id))
-      .then((data) => {
-        if (data) setUser(data);
-        else setError('User Not Found');
-      })
-      .catch(() => setError('Error fetching user'))
-      .finally(() => setLoading(false));
+        .then((data) => {
+          if (data) setUser(data);
+          else setError('User Not Found');
+        })
+        .catch(() => setError('Error fetching user'))
+        .finally(() => setLoading(false));
 
     }, 1000)
-   
+
   }, [id]);
 
   if (loading)
@@ -34,18 +35,18 @@ const UserDetailPage: React.FC = () => {
 
   return (
     <div className="container">
-       <Link to="/">
-       <span className='back-link'>  ← Home</span>
-        
-        </Link> 
+      <Link to="/">
+        <span className='back-link'>  ← Home</span>
+
+      </Link>
       <h1>User Details</h1>
       <div className="user-details">
-      {user?.avatar &&  <img
+        {user?.avatar && <img
           src={user!.avatar}
           alt={`${user!.first_name} ${user!.last_name}`}
           className="user-avatar"
-        /> }
-       
+        />}
+
 
         <ul>
           <li>

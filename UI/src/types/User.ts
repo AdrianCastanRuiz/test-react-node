@@ -11,4 +11,4 @@ export interface User {
         department: string
     };
     skills: string[];
-  }
+}

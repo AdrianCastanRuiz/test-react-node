@@ -10,14 +10,14 @@ const UserListPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       fetchUsers()
-      .then((data) => setUsers(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+        .then((data) => setUsers(data))
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
 
-    },1000)
-   
+    }, 1000)
+
   }, []);
 
   if (loading)
