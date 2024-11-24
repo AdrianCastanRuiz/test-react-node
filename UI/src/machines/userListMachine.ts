@@ -1,5 +1,5 @@
-// src/machines/userListMachine.ts
-import { createMachine, assign } from 'xstate';
+import { assign, setup, fromPromise } from 'xstate';
+import { fetchUsers } from '../services/api';
 
 interface User {
   id: number;
@@ -7,33 +7,43 @@ interface User {
   last_name: string;
 }
 
-interface UserListContext {
-  users: User[];
-  error: string | null;
-}
-
-export const userListMachine = createMachine({
-  id: 'userList',
+export const userListMachine = setup({
+  types: {
+    context: {
+      users: [] as User[],
+      error: null as any
+    },
+  },
+  actors: {
+    fetchUsers: fromPromise(async ()=>{
+      const users = await fetchUsers();
+      return users;
+    }),
+  },
+}).createMachine({
+  id: 'user-list',
   initial: 'loading',
   context: {
     users: [],
-    error: null,
+    error: null
   },
   states: {
     loading: {
-      invoke: {
+      invoke:{
         src: 'fetchUsers',
-        onDone: {
+        onDone:{
           target: 'success',
-          actions: assign({ users: (_, event) => event.data }),
+          actions: assign({users: ({event})=> event.output})
         },
         onError: {
           target: 'failure',
-          actions: assign({ error: (_, event) => event.data }),
-        },
-      },
+          actions: assign({error: ({event})=> event.error})
+        }
+      }
     },
     success: {},
-    failure: {},
-  },
-});
+    failure: {
+
+    }
+  }
+})
