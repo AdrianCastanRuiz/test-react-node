@@ -1,54 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { fetchUserById } from '../services/api';
-import { User } from '../types/User';
-
-
-
-
+import { useMachine } from '@xstate/react';
+import { userDetailsMachine } from '../machines/userDetailMachine';
 
 const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, send] = useMachine(userDetailsMachine);
+  const { user, error } = state.context;
 
   useEffect(() => {
-    setTimeout(()=>{
-      fetchUserById(Number(id))
-      .then((data) => {
-        if (data) setUser(data);
-        else setError('User Not Found');
-      })
-      .catch(() => setError('Error fetching user'))
-      .finally(() => setLoading(false));
+    if (id) {
+      send({
+        type: 'UPDATE_USER_ID',
+        userId: id,
+      });
+    }
+  }, [id, send]);
 
-    }, 1000)
-   
-  }, [id]);
-
-  if (loading)
+  if (state.matches('loading')) {
     return (
       <div className="spinner-wrapper">
         <div className="spinner"></div>
       </div>
     );
-  if (error) return <div className="error">{error}</div>;
+  }
+
+  if (state.matches('failure')) {
+    return <div className="error">{error || 'An unknown error occurred.'}</div>;
+  }
+
+  if (!user) return null;
 
   return (
     <div className="container">
-       <Link to="/">
-       <span className='back-link'>  ← Home</span>
-        
-        </Link>
+      <Link to="/">
+        <span className="back-link"> ← Home</span>
+      </Link>
       <h1>User Details</h1>
       <div className="user-details">
-      {user?.avatar &&  <img
-          src={user!.avatar}
-          alt={`${user!.first_name} ${user!.last_name}`}
-          className="user-avatar"
-        /> }
-       
+        {user?.avatar && (
+          <img
+            src={user!.avatar}
+            alt={`${user!.first_name} ${user!.last_name}`}
+            className="user-avatar"
+          />
+        )}
 
         <ul>
           <li>
@@ -64,13 +60,15 @@ const UserDetailPage: React.FC = () => {
             <strong>Email:</strong> {user!.email}
           </li>
           <li>
-            <strong>Email Verified:</strong> {user!.emailVerified ? 'Yes' : 'No'}
+            <strong>Email Verified:</strong>{' '}
+            {user!.emailVerified ? 'Yes' : 'No'}
           </li>
           <li>
             <strong>Date of Birth:</strong> {user!.dob}
           </li>
           <li>
-            <strong>Company:</strong> {user!.company.name} - {user!.company.department}
+            <strong>Company:</strong> {user!.company.name} -{' '}
+            {user!.company.department}
           </li>
         </ul>
 
