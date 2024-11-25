@@ -48,7 +48,7 @@ export const userListMachine = setup({
           actions: assign({
             error: ({ event }) => {
               console.log('Error received in onError:', event.error); 
-              return event.error.message || 'An unknown error occurred';
+              return (event.error as Error).message || 'An unknown error occurred';
             },
           }),
         },
