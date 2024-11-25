@@ -18,11 +18,11 @@ export const userListMachine = setup({
     fetchUsers: fromPromise(async () => {
       try {
         const users = await fetchUsers();
-        console.log('Fetched users:', users); 
+        console.log('Fetched users:', users);
         return users;
       } catch (error) {
-        console.error('Error in fetchUsers:', error); 
-        throw error; 
+        console.error('Error in fetchUsers:', error);
+        throw error;
       }
     }),
   },
@@ -47,11 +47,17 @@ export const userListMachine = setup({
           target: 'failure',
           actions: assign({
             error: ({ event }) => {
-              console.log('Error received in onError:', event.error); 
-              return (event.error as Error).message || 'An unknown error occurred';
+              console.log('Error received in onError:', event.error);
+
+              if (event.error instanceof Error) {
+                return event.error.message;
+              }
+
+              return 'An unknown error occurred';
             },
           }),
         },
+
       },
     },
     success: {},

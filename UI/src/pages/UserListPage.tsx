@@ -8,8 +8,6 @@ const UserListPage: React.FC = () => {
 
   const { users, error } = state.context;
 
-  console.log('State:', state.value, 'Context:', state.context);
-
   if (state.matches('loading')) {
     return (
       <div className="spinner-wrapper">
