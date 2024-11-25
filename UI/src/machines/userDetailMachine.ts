@@ -1,89 +1,69 @@
-import { setup, fromPromise, assign } from 'xstate';
-import { fetchUserById } from '../services/api';
+import { setup, fromPromise } from "xstate";
+import { fetchUserById } from "../services/api";
+import { User } from "../types/User";
 
-interface User {
-  id: number;
-  avatar: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  dob: string;
-  emailVerified: boolean;
-  company: {
-    name: string;
-    department: string;
-  };
-  skills: Array<string>;
-}
 
-export const userDetailsMachine = setup({
+
+
+export const userDetailMachine = setup({
   types: {
     context: {} as {
-      userId: string;
       user: User | null;
       error: string | null;
+      id: string | null;
     },
-    input: {} as {
-      userId: string;
-    },
-    events: {} as
-      | { type: 'FETCH' }
-      | { type: 'RETRY' }
-      | { type: 'UPDATE_USER_ID'; userId: string },
+    events: {} as { type: 'RETRY' },
+    input: {} as { id: string }
   },
   actors: {
-    fetchUser: fromPromise(async ({ input }) => {
-      if(!input) return null;
-      const user = await fetchUserById(input.userId);
-      return user;
-    }),
+    fetchUser: fromPromise(({ input }) => {
+      return fetchUserById(Number(input))
+    })
+  },
+  actions: {
+    setUser: ({ context, event }) => {
+      if ('output' in event) {
+        context.user = event.output as User;
+        context.error = null;
+      }
+    },
+    setError: ({ context, event }) => {
+      if ('error' in event) {
+        context.error = String(event.error);
+        context.user = null;
+      }
+    }
   },
 }).createMachine({
-  id: 'user',
-  initial: 'idle',
-  context: {
-    userId: '',
+  id: "userDetail",
+  initial: "loading",
+  context: ({ input }) => ({
     user: null,
     error: null,
-  },
+    id: input.id
+  }),
   states: {
-    idle: {
-      on: {
-        UPDATE_USER_ID: {
-          actions: assign({
-            userId: ({event: {userId}}) => {
-              return userId;
-            },
-          }),
-          target: 'loading'
-        },
-      },
-    },
     loading: {
       invoke: {
-        id: 'fetchUser',
         src: 'fetchUser',
-        input: ({ context: { userId } }) => ({ userId }),
+        input: ({ context }) => context.id,
         onDone: {
-          target: 'success',
-          actions: assign({ user: ({ event }) => event.output, error: null }),
+          target: "success",
+          actions: 'setUser'
         },
         onError: {
-          target: 'failure',
-          actions: assign({
-            error: ({ event }) => `Error loading user data. Reason: ${event.error}`,
-            user: null,
-          }),
-        },
-      },
+          target: "failure",
+          actions: 'setError'
+        }
+      }
     },
     success: {
-      type: 'final',
+      type: "final"
     },
     failure: {
       on: {
-        RETRY: { target: 'loading' },
-      },
-    },
-  },
+        RETRY: "loading"
+      }
+    }
+  }
 });
