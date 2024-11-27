@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useMachine } from '@xstate/react'; // Import XState's React integration
+import { useMachine } from '@xstate/react'; 
 import { userListMachine } from '../machines/userListMachine';
 
 const UserListPage: React.FC = () => {
-
-  const [state] = useMachine(userListMachine);
+  const [state, send] = useMachine(userListMachine);
 
   const { users, error } = state.context;
 
@@ -19,9 +18,9 @@ const UserListPage: React.FC = () => {
 
   if (state.matches('failure')) {
     return (
-      <div className="error-message">
-        <h2>Error</h2>
-        <p>{error || 'An unknown error occurred.'}</p>
+      <div className="error">
+        <p>{error || 'Something went wrong'}</p>
+        <button style={{padding: "0.5rem"}} onClick={() => send({ type: 'RETRY' })}>Retry</button>
       </div>
     );
   }
@@ -48,4 +47,3 @@ const UserListPage: React.FC = () => {
 };
 
 export default UserListPage;
-

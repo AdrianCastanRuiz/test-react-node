@@ -10,7 +10,7 @@ router.get('/', (req: Request, res: Response) => {
     last_name,
     avatar,
   }));
-  res.json(userList);
+  res.status(200).json(userList);
 });
 
 router.get('/:id', (req: Request, res: any) => {
@@ -22,7 +22,7 @@ router.get('/:id', (req: Request, res: any) => {
     return res.status(404).json({ error: 'User Not Found' });
   }
 
-  res.json(user);
+  res.status(200).json(user);
 });
 
 export default router;
