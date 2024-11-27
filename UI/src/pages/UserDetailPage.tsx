@@ -3,18 +3,6 @@ import { useActor } from "@xstate/react";
 import { Link, useParams } from "react-router-dom";
 import { userDetailMachine } from "../machines/userDetailMachine";
 
-
-import React from "react";
-import { useActor } from "@xstate/react";
-import { Link, useParams } from "react-router-dom";
-import { userDetailMachine } from "../machines/userDetailMachine";
-
-
-
-
-
-
-
 const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [state, send] = useActor(userDetailMachine, {
